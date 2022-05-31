@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
@@ -9,6 +9,12 @@ export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   function handleAddTask(newTaskTitle: string) {
+    //buscar mesmo titulo
+    const repeatedTitle = tasks.find(task => task.title === newTaskTitle);
+    if (repeatedTitle){
+      return Alert.alert("Task já cadastrada!", 'Você não pode cadastrar uma task com o mesmo nome');
+    }
+    
     const newTask = {
       id: new Date().getTime(),
       title: newTaskTitle,
@@ -32,8 +38,21 @@ export function Home() {
   }
 
   function handleRemoveTask(id: number) {
-    const updatedTasks = tasks.filter(tasks => tasks.id !== id);
-    setTasks(updatedTasks);
+    //quando clica no botão exibe o alerta perguntado, se não cancela e se sim faz o remove
+    Alert.alert('Remover item','Tem certeza que você deseja remover esse item?',[
+      {
+        style: 'destructive',
+        text: 'Sim',
+        onPress: () => {
+          const updatedTasks = tasks.filter(tasks => tasks.id !== id);
+          setTasks(updatedTasks);
+        }
+      },
+      {
+        style: 'cancel',
+        text: 'Não'
+      }
+    ])
   }
 
   return (
